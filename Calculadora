@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Calculadora de Média de Investimentos</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #fff;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: #ffffff;
+            color: #1e293b;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #0f172a;
+            margin-bottom: 10px;
+            font-size: 26px;
+        }
+
+        .descricao {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 25px;
+            font-size: 15px;
+        }
+
+        .investimento {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 7px;
+            color: #334155;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 17px;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        input:focus {
+            border-color: #2563eb;
+        }
+
+        .resultado {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            background: #f1f5f9;
+        }
+
+        .resultado h2 {
+            font-size: 17px;
+            margin-bottom: 8px;
+            color: #475569;
+        }
+
+        #media {
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .positivo {
+            color: #16a34a;
+        }
+
+        .negativo {
+            color: #dc2626;
+        }
+
+        .neutro {
+            color: #64748b;
+        }
+
+        .botoes {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            flex: 1;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-calcular {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-calcular:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-limpar {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .btn-limpar:hover {
+            background: #cbd5e1;
+        }
+
+        .info {
+            margin-top: 20px;
+            padding: 14px;
+            background: #eff6ff;
+            border-radius: 10px;
+            color: #1e40af;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 500px) {
+            .container {
+                padding: 22px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            #media {
+                font-size: 27px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>📊 Média dos Investimentos</h1>
+
+        <p class="descricao">
+            Informe o lucro ou prejuízo de cada investimento.
+        </p>
+
+        <div class="investimento">
+            <label for="investimento1">Investimento 1</label>
+            <input
+                type="number"
+                id="investimento1"
+                placeholder="Ex.: 1500 ou -500"
+                step="0.01"
+            >
+        </div>
+
+        <div class="investimento">
+            <label for="investimento2">Investimento 2</label>
+            <input
+                type="number"
+                id="investimento2"
+                placeholder="Ex.: 1500 ou -500"
+                step="0.01"
+            >
+        </div>
+
+        <div class="investimento">
+            <label for="investimento3">Investimento 3</label>
+            <input
+                type="number"
+                id="investimento3"
+                placeholder="Ex.: 1500 ou -500"
+                step="0.01"
+            >
+        </div>
+
+        <div class="investimento">
+            <label for="investimento4">Investimento 4</label>
+            <input
+                type="number"
+                id="investimento4"
+                placeholder="Ex.: 1500 ou -500"
+                step="0.01"
+            >
+        </div>
+
+        <div class="botoes">
+            <button class="btn-calcular" onclick="calcularMedia()">
+                Calcular média
+            </button>
+
+            <button class="btn-limpar" onclick="limparCampos()">
+                Limpar
+            </button>
+        </div>
+
+        <div class="resultado">
+            <h2>Média de lucro/prejuízo</h2>
+            <div id="media" class="neutro">
+                R$ 0,00
+            </div>
+        </div>
+
+        <div class="info">
+            💡 <strong>Como funciona:</strong><br>
+            Digite somente o valor do lucro ou prejuízo.
+            Use valores positivos para lucro e valores negativos para prejuízo.
+            O sistema calcula a média dos 4 investimentos.
+        </div>
+
+    </div>
+
+    <script>
+        function calcularMedia() {
+
+            const valores = [
+                document.getElementById("investimento1").value,
+                document.getElementById("investimento2").value,
+                document.getElementById("investimento3").value,
+                document.getElementById("investimento4").value
+            ];
+
+            const numeros = valores.map(valor => {
+                return valor === "" ? 0 : parseFloat(valor);
+            });
+
+            const soma = numeros.reduce((total, valor) => total + valor, 0);
+
+            const media = soma / 4;
+
+            const resultado = document.getElementById("media");
+
+            resultado.textContent = formatarMoeda(media);
+
+            resultado.classList.remove("positivo", "negativo", "neutro");
+
+            if (media > 0) {
+                resultado.classList.add("positivo");
+            } else if (media < 0) {
+                resultado.classList.add("negativo");
+            } else {
+                resultado.classList.add("neutro");
+            }
+        }
+
+        function formatarMoeda(valor) {
+
+            return valor.toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL"
+            });
+
+        }
+
+        function limparCampos() {
+
+            document.getElementById("investimento1").value = "";
+            document.getElementById("investimento2").value = "";
+            document.getElementById("investimento3").value = "";
+            document.getElementById("investimento4").value = "";
+
+            const resultado = document.getElementById("media");
+
+            resultado.textContent = "R$ 0,00";
+
+            resultado.classList.remove("positivo", "negativo");
+            resultado.classList.add("neutro");
+        }
+    </script>
+
+</body>
+</html>
