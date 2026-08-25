@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Calculadora de Média de Investimentos</title>
+    <title>Calculadora de Party Hunt - Huntera</title>
 
     <style>
         * {
@@ -104,6 +104,45 @@
             color: #64748b;
         }
 
+        .acertos {
+            margin-top: 18px;
+            text-align: left;
+        }
+
+        .acertos h3 {
+            font-size: 16px;
+            color: #334155;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .transferencia {
+            padding: 10px 12px;
+            margin-bottom: 8px;
+            border-radius: 9px;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .transferencia.pagar {
+            border-left: 4px solid #dc2626;
+        }
+
+        .transferencia.receber {
+            border-left: 4px solid #16a34a;
+        }
+
+        .equilibrado {
+            padding: 12px;
+            border-radius: 9px;
+            background: #ecfdf5;
+            color: #166534;
+            text-align: center;
+            font-weight: bold;
+        }
+
         .botoes {
             display: flex;
             gap: 10px;
@@ -169,14 +208,14 @@
 
     <div class="container">
 
-        <h1>📊 Média dos Investimentos</h1>
+        <h1>📊 Divisão de Investimentos</h1>
 
         <p class="descricao">
-            Informe o lucro ou prejuízo de cada investimento.
+            Informe o valor de cada classe para calcular a divisão proporcional.
         </p>
 
         <div class="investimento">
-            <label for="investimento1">Investimento 1</label>
+            <label for="investimento1">Elite Knight</label>
             <input
                 type="number"
                 id="investimento1"
@@ -186,7 +225,7 @@
         </div>
 
         <div class="investimento">
-            <label for="investimento2">Investimento 2</label>
+            <label for="investimento2">Royal Paladin</label>
             <input
                 type="number"
                 id="investimento2"
@@ -196,7 +235,7 @@
         </div>
 
         <div class="investimento">
-            <label for="investimento3">Investimento 3</label>
+            <label for="investimento3">Elder Druid</label>
             <input
                 type="number"
                 id="investimento3"
@@ -206,7 +245,7 @@
         </div>
 
         <div class="investimento">
-            <label for="investimento4">Investimento 4</label>
+            <label for="investimento4">Master Sorcerer</label>
             <input
                 type="number"
                 id="investimento4"
@@ -217,7 +256,7 @@
 
         <div class="botoes">
             <button class="btn-calcular" onclick="calcularMedia()">
-                Calcular média
+                Calcular divisão
             </button>
 
             <button class="btn-limpar" onclick="limparCampos()">
@@ -226,23 +265,26 @@
         </div>
 
         <div class="resultado">
-            <h2>Média de lucro/prejuízo</h2>
-            <div id="media" class="neutro">
-                R$ 0,00
-            </div>
+            <h2>Valor médio por classe</h2>
+            <div id="media" class="neutro">R$ 0,00</div>
+            <div id="acertos" class="acertos"></div>
         </div>
 
         <div class="info">
             💡 <strong>Como funciona:</strong><br>
-            Digite somente o valor do lucro ou prejuízo.
-            Use valores positivos para lucro e valores negativos para prejuízo.
-            O sistema calcula a média dos 4 investimentos.
+            Digite o valor de cada classe. O sistema calcula a média e mostra quem deve pagar e quem deve receber para que todos fiquem igualmente proporcionais.
         </div>
 
     </div>
 
     <script>
         function calcularMedia() {
+            const nomes = [
+                "Elite Knight",
+                "Royal Paladin",
+                "Elder Druid",
+                "Master Sorcerer"
+            ];
 
             const valores = [
                 document.getElementById("investimento1").value,
@@ -252,15 +294,14 @@
             ];
 
             const numeros = valores.map(valor => {
-                return valor === "" ? 0 : parseFloat(valor);
+                const numero = parseFloat(valor);
+                return Number.isFinite(numero) ? numero : 0;
             });
 
             const soma = numeros.reduce((total, valor) => total + valor, 0);
-
             const media = soma / 4;
 
             const resultado = document.getElementById("media");
-
             resultado.textContent = formatarMoeda(media);
 
             resultado.classList.remove("positivo", "negativo", "neutro");
@@ -272,6 +313,77 @@
             } else {
                 resultado.classList.add("neutro");
             }
+
+            calcularAcertos(nomes, numeros, media);
+        }
+
+        function calcularAcertos(nomes, valores, media) {
+            const acertos = document.getElementById("acertos");
+
+            // Diferença em relação à média:
+            // valor abaixo da média = precisa pagar;
+            // valor acima da média = precisa receber.
+            const saldos = valores.map(valor => valor - media);
+
+            const pagadores = [];
+            const recebedores = [];
+
+            saldos.forEach((saldo, index) => {
+                if (saldo < -0.005) {
+                    pagadores.push({
+                        nome: nomes[index],
+                        valor: -saldo
+                    });
+                } else if (saldo > 0.005) {
+                    recebedores.push({
+                        nome: nomes[index],
+                        valor: saldo
+                    });
+                }
+            });
+
+            if (pagadores.length === 0 && recebedores.length === 0) {
+                acertos.innerHTML = `
+                    <h3>Acerto entre os jogadores</h3>
+                    <div class="equilibrado">✓ Todos já estão igualmente proporcionais.</div>
+                `;
+                return;
+            }
+
+            // Distribui cada valor devido entre os jogadores que têm saldo a receber.
+            const pagamentos = [];
+            let r = 0;
+
+            pagadores.forEach(pagador => {
+                let restante = pagador.valor;
+
+                while (restante > 0.005 && r < recebedores.length) {
+                    const recebedor = recebedores[r];
+                    const valorPagamento = Math.min(restante, recebedor.valor);
+
+                    if (valorPagamento > 0.005) {
+                        pagamentos.push(
+                            `<div class="transferencia pagar">
+                                <strong>${pagador.nome}</strong> paga
+                                <strong>${formatarMoeda(valorPagamento)}</strong>
+                                para <strong>${recebedor.nome}</strong>.
+                            </div>`
+                        );
+                    }
+
+                    restante -= valorPagamento;
+                    recebedor.valor -= valorPagamento;
+
+                    if (recebedor.valor <= 0.005) {
+                        r++;
+                    }
+                }
+            });
+
+            acertos.innerHTML = `
+                <h3>Acerto entre os jogadores</h3>
+                ${pagamentos.join("")}
+            `;
         }
 
         function formatarMoeda(valor) {
@@ -291,8 +403,10 @@
             document.getElementById("investimento4").value = "";
 
             const resultado = document.getElementById("media");
+            const acertos = document.getElementById("acertos");
 
             resultado.textContent = "R$ 0,00";
+            acertos.innerHTML = "";
 
             resultado.classList.remove("positivo", "negativo");
             resultado.classList.add("neutro");
