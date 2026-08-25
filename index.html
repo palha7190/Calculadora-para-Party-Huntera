@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Calculadora de Party Hunt - Huntera</title>
+    <title>Calculadora de Investimentos - Party Hunter</title>
 
     <style>
         * {
@@ -208,10 +208,10 @@
 
     <div class="container">
 
-        <h1>📊 Divisão de Investimentos</h1>
+        <h1>📊 Divisão de lucro da hunt</h1>
 
         <p class="descricao">
-            Informe o valor de cada classe para calcular a divisão proporcional.
+            Informe o valor em Gold de cada classe para calcular a divisão proporcional.
         </p>
 
         <div class="investimento">
@@ -266,13 +266,13 @@
 
         <div class="resultado">
             <h2>Valor médio por classe</h2>
-            <div id="media" class="neutro">R$ 0,00</div>
+            <div id="media" class="neutro">0 Gold</div>
             <div id="acertos" class="acertos"></div>
         </div>
 
         <div class="info">
             💡 <strong>Como funciona:</strong><br>
-            Digite o valor de cada classe. O sistema calcula a média e mostra quem deve pagar e quem deve receber para que todos fiquem igualmente proporcionais.
+            Digite o valor em Gold de cada classe. O sistema calcula a média e mostra quem deve pagar e quem deve receber para que todos fiquem igualmente proporcionais.
         </div>
 
     </div>
@@ -302,7 +302,7 @@
             const media = soma / 4;
 
             const resultado = document.getElementById("media");
-            resultado.textContent = formatarMoeda(media);
+            resultado.textContent = formatarGold(media);
 
             resultado.classList.remove("positivo", "negativo", "neutro");
 
@@ -365,7 +365,7 @@
                         pagamentos.push(
                             `<div class="transferencia pagar">
                                 <strong>${pagador.nome}</strong> paga
-                                <strong>${formatarMoeda(valorPagamento)}</strong>
+                                <strong>${formatarGold(valorPagamento)}</strong>
                                 para <strong>${recebedor.nome}</strong>.
                             </div>`
                         );
@@ -386,13 +386,11 @@
             `;
         }
 
-        function formatarMoeda(valor) {
-
+        function formatarGold(valor) {
             return valor.toLocaleString("pt-BR", {
-                style: "currency",
-                currency: "BRL"
-            });
-
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 2
+            }) + " Gold";
         }
 
         function limparCampos() {
@@ -405,7 +403,7 @@
             const resultado = document.getElementById("media");
             const acertos = document.getElementById("acertos");
 
-            resultado.textContent = "R$ 0,00";
+            resultado.textContent = "0 Gold";
             acertos.innerHTML = "";
 
             resultado.classList.remove("positivo", "negativo");
